@@ -1,11 +1,8 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import UsuarioRepository from '../repositories/usuario-repository.js';
-import PublicacionRepository from '../repositories/publicacion-repository.js';
-
 const secretKey = process.env.SECRET_KEY_JTW;
 const usuarioRepository = new UsuarioRepository();
-const publicacionRepository = new PublicacionRepository();
 
 
 export const loginUsuario = async ({ email, nickname, password }) => {
@@ -61,24 +58,41 @@ export const registrarUsuario = async ({ email, name, password }) => {
 
 
 export const obtenerPerfilUsuario = async (userId) => {
-  const usuario = await usuarioRepository.getByIdAsync(userId);
-  if (!usuario) {
+  const filas = await usuarioRepository.getPerfilConPublicacionesAsync(userId);
+
+  if (!filas || filas.length === 0) {
     throw new Error('Usuario no encontrado');
   }
 
-  const publicaciones = await publicacionRepository.getByUsuarioIdAsync(userId);
+  // Los datos del usuario se repiten en cada fila (por el JOIN), tomo la primera
+  const primera = filas[0];
 
-  return {
-    id: usuario.id,
-    email: usuario.email,
-    name: usuario.name,
-    nombre_completo: usuario.nombre_completo,
-    biografia: usuario.biografia,
-    foto_perfil: usuario.foto_perfil,
-    publicaciones
+  const perfil = {
+    id: primera.usuario_id,
+    email: primera.email,
+    name: primera.name,
+    nombre_completo: primera.nombre_completo,
+    biografia: primera.biografia,
+    foto_perfil: primera.foto_perfil,
+    publicaciones: primera.publicacion_id
+      ? filas.map(f => ({
+          id: f.publicacion_id,
+          url_imagen: f.url_imagen,
+          descripcion: f.descripcion,
+          likes: f.likes,
+          fecha_creacion: f.fecha_creacion
+        }))
+      : []
   };
-};
 
+  return perfil;
+};
 export const editarPerfilUsuario = async (userId, { biografia, nombre_completo, foto_perfil }) => {
-  return usuarioRepository.updateAsync(userId, { biografia, nombre_completo, foto_perfil });
+  const usuarioActualizado = await usuarioRepository.updateAsync(userId, { biografia, nombre_completo, foto_perfil });
+
+  if (!usuarioActualizado) {
+    throw new Error('Usuario no encontrado');
+  }
+
+  return usuarioActualizado;
 };

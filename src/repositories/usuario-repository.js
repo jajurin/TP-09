@@ -89,7 +89,39 @@ updateAsync = async (id, entity) => {
     return returnResult;
 }
     
-    
+    getPerfilConPublicacionesAsync = async (id) => {
+    let returnResult = null;
+    const client = new Client(DBConfig);
+    try {
+        await client.connect();
+        const sql = `
+            SELECT 
+                u.id AS usuario_id,
+                u.name,
+                u.nombre_completo,
+                u.email,
+                u.foto_perfil,
+                u.biografia,
+                p.id AS publicacion_id,
+                p.url_imagen,
+                p.descripcion,
+                p.likes,
+                p.fecha_creacion
+            FROM usuarios u
+            LEFT JOIN publicaciones p ON p.usuario_id = u.id
+            WHERE u.id = $1
+            ORDER BY p.fecha_creacion DESC
+        `;
+        const values = [id];
+        const result = await client.query(sql, values);
+        returnResult = result.rows;
+    } catch (error) {
+        logHelper.logError(error);
+    } finally {
+        await client.end();
+    }
+    return returnResult;
+}
     
     }
 
