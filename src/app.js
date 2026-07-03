@@ -6,7 +6,7 @@ import usuariosRoutes from "./routes/usuariosRoutes.js";
 
 
 const app = express();
-const port = 3000;
+const port = 3000;  // El puerto 3000 (http://localhost:3000)
 
 app.use(cors());
 app.use(express.json());

@@ -1,3 +1,6 @@
+import { Client } from 'pg';
+import DBConfig from '../config/db-config.js'; 
+import logHelper from '../helpers/logHelper.js'; 
 export default class PublicacionRepository {
   getAllAsync = async () => {
     let returnResult = null;

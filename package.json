@@ -1,4 +1,4 @@
-{
+{  "type": "module",
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
@@ -8,5 +8,8 @@
     "jsonwebtoken": "^9.0.3",
     "nodemon": "^3.1.14",
     "pg": "^8.22.0"
+  },
+  "scripts": {
+    "start": "node src/app.js"
   }
 }
