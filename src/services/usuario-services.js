@@ -1,23 +1,53 @@
-import usuarioRepository from '../repositories/usuario-repository.js';
-import { validarProvincia } from '../helpers/validaciones-helper.js';
+import bcrypt from 'bcrypt';
+import UsuarioRepository from '../repositories/usuario-repository.js';
 
+const secretKey = process.env.SECRET_KEY_JTW;
 
-export default class usuarioService {
+const usuarioRepository = new UsuarioRepository();
+export const loginUsuario = async ({ email, password }) => {
+   if (email) {
+    usuario = await usuarioRepository.getByEmailAsync(email);
+  }
 
-    getAllAsync = async () => {
-        const repo = new usuarioRepository()   
-        const returnArray = await repo.getAllAsync()
-        return returnArray
-    }
+  if (!usuario && nickname) {
+    usuario = await usuarioRepository.getByNameAsync(nickname);
+  }
+  // Compara la contraseña ingresada contra el hash guardado en la BD
+  const esValida = await bcrypt.compare(password, usuario.password);
+  if (!esValida) {
+    throw new Error('Credenciales inválidas');
+  }
 
-  getByIdAsync = async (id) => {
+  const payload = {
+    id: usuario.id,
+    email: usuario.email,
+    name: usuario.name
+  };
 
-    const repo = new usuarioRepository();
-    const usuario = await repo.getByIdAsync(id)
-    return usuario;
-}
-   createAsync = async (body) => {
-    validarProvincia(body)
-    const repo = new usuarioRepository()
-    return await repo.createAsync(body)
-}}
+  const options = {
+    expiresIn: '2h',
+    issuer: 'ORT'
+  };
+
+  const token = jwt.sign(payload, secretKey, options);
+
+  return token;
+};
+
+export const registrarUsuario = async ({ email, name, password }) => {
+  const existePorEmail = await usuarioRepository.getByEmailAsync(email);
+  if (existePorEmail) {
+    throw new Error('Email ya registrado');
+  }
+
+  const existePorNombre = await usuarioRepository.getByNameAsync(name);
+  if (existePorNombre) {
+    throw new Error('Nickname ya registrado');
+  }
+
+  // Genera un hash de la contraseña (con 10 rondas de salt) para no guardarla en texto plano en la BD
+const hashedPassword = await bcrypt.hash(password, 10);
+
+  return usuarioRepository.createAsync({ name, email, password: hashedPassword });
+  
+};

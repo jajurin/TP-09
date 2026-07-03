@@ -1,28 +1,30 @@
-export default class usuarioRepository {
-    getAllAsync = async () => {
-        let returnArray = null;
-        const client = new Client(DBConfig);
-        try {
-            await client.connect();
-            const sql    = `SELECT * FROM province`;
-            const result = await client.query(sql);
-            returnArray = result.rows;
-        } catch (error) {
-            logHelper.logError(error);
-        }finally {
-    await client.end();
-         }
-        return returnArray;
-    }
-    
-    getByIdAsync = async (idR) => {
+export default class usuarioRepository {    
+    getByEmailAsync = async (email) => {
         
         let returnResult = null;
         const client = new Client(DBConfig);
         try {
             await client.connect();
-            const sql    = `SELECT * FROM province WHERE id = $1 `;
-              const values = [idR];
+            const sql    = `SELECT * FROM usuarios WHERE email = $1 `;
+              const values = [email];
+            const result = await client.query(sql, values);
+            returnResult = result.rows[0];
+        } catch (error) {
+            logHelper.logError(error);
+        }finally {
+    await client.end();
+          } 
+        return returnResult;
+
+    }
+      getByNameAsync = async (name) => {
+        
+        let returnResult = null;
+        const client = new Client(DBConfig);
+        try {
+            await client.connect();
+            const sql    = `SELECT * FROM usuarios WHERE name = $1 `;
+              const values = [name];
             const result = await client.query(sql, values);
             returnResult = result.rows[0];
         } catch (error) {
@@ -38,8 +40,8 @@ export default class usuarioRepository {
         const client = new Client(DBConfig);
         try {
             await client.connect();
-            const sql    = `INSERT INTO province ( name, full_name, latitude, longitude, display_order) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
-              const values = [ entity.name, entity.full_name, entity.latitude, entity.longitude, entity.display_order];
+            const sql = `INSERT INTO usuarios (name, email, password) VALUES ($1, $2, $3) RETURNING *`;
+            const values = [entity.name, entity.email, entity.password];
             const result = await client.query(sql, values);
             returnResult = result.rows[0];
         } catch (error) {

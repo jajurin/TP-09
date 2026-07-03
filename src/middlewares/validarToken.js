@@ -14,7 +14,7 @@
         const payloadOriginal = jwt.verify(token, secretKey);
         req.user = payloadOriginal; 
         next();
-    } catch (e) {
-        return res.status(403).json({ message: 'Token inválido o expirado' });
-    }
+      } catch (e) {
+    return res.status(401).json({ message: 'Token inválido o expirado' });
+        }
     };
