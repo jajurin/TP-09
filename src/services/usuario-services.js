@@ -1,19 +1,19 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import UsuarioRepository from '../repositories/usuario-repository.js';
-const secretKey = process.env.SECRET_KEY_JTW;
+const secretKey = process.env.SECRET_KEY_Jwt;
 const usuarioRepository = new UsuarioRepository();
 
 
-export const loginUsuario = async ({ email, nickname, password }) => {
+export const loginUsuario = async ({ email, nombre_usuario, password }) => {
   let usuario = null;
 
   if (email) {
     usuario = await usuarioRepository.getByEmailAsync(email);
   }
 
-  if (!usuario && nickname) {
-    usuario = await usuarioRepository.getByNameAsync(nickname);
+  if (!usuario && nombre_usuario) {
+    usuario = await usuarioRepository.getByNameAsync(nombre_usuario);
   }
 
   if (!usuario) {
@@ -28,7 +28,7 @@ export const loginUsuario = async ({ email, nickname, password }) => {
   const payload = {
     id: usuario.id,
     email: usuario.email,
-    name: usuario.name
+    nombre_usuario: usuario.nombre_usuario
   };
 
   const options = {
@@ -39,20 +39,20 @@ export const loginUsuario = async ({ email, nickname, password }) => {
   return jwt.sign(payload, secretKey, options);
 };
 
-export const registrarUsuario = async ({ email, name, password }) => {
+export const registrarUsuario = async ({ email, nombre_usuario, nombre_completo, password }) => {
   const existePorEmail = await usuarioRepository.getByEmailAsync(email);
   if (existePorEmail) {
     throw new Error('Email ya registrado');
   }
 
-  const existePorNombre = await usuarioRepository.getByNameAsync(name);
+  const existePorNombre = await usuarioRepository.getByNameAsync(nombre_usuario);
   if (existePorNombre) {
-    throw new Error('Nickname ya registrado');
+    throw new Error('Nombre de usuario ya registrado');
   }
-  // Genera un hash de la contraseña (con 10 rondas de salt) para no guardarla en texto plano en la BD
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  return usuarioRepository.createAsync({ name, email, password: hashedPassword });
+  return usuarioRepository.createAsync({ nombre_usuario, nombre_completo, email, password: hashedPassword });
 };
 
 
@@ -70,7 +70,7 @@ export const obtenerPerfilUsuario = async (userId) => {
   const perfil = {
     id: primera.usuario_id,
     email: primera.email,
-    name: primera.name,
+    nombre_usuario: primera.nombre_usuario,
     nombre_completo: primera.nombre_completo,
     biografia: primera.biografia,
     foto_perfil: primera.foto_perfil,

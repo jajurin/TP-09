@@ -20,14 +20,14 @@ export default class usuarioRepository {
         return returnResult;
 
     }
-      getByNameAsync = async (name) => {
+      getByNameAsync = async (nombre_usuario) => {
         
         let returnResult = null;
         const client = new Client(DBConfig);
         try {
             await client.connect();
-            const sql    = `SELECT * FROM usuarios WHERE name = $1 `;
-              const values = [name];
+            const sql    = `SELECT * FROM usuarios WHERE nombre_usuario = $1 `;
+              const values = [nombre_usuario];
             const result = await client.query(sql, values);
             returnResult = result.rows[0];
         } catch (error) {
@@ -38,21 +38,22 @@ export default class usuarioRepository {
         return returnResult;
 
     }
-    createAsync = async (entity) => {
-        let returnResult = null;
-        const client = new Client(DBConfig);
-        try {
-            await client.connect();
-            const sql = `INSERT INTO usuarios (name, email, password) VALUES ($1, $2, $3) RETURNING *`;
-            const values = [entity.name, entity.email, entity.password];
-            const result = await client.query(sql, values);
-            returnResult = result.rows[0];
-        } catch (error) {
-            logHelper.logError(error);
-        }finally {
-    await client.end();
-       } 
-        return returnResult;}
+createAsync = async (entity) => {
+    let returnResult = null;
+    const client = new Client(DBConfig);
+    try {
+        await client.connect();
+        const sql = `INSERT INTO usuarios (nombre_usuario, nombre_completo, email, password) VALUES ($1, $2, $3, $4) RETURNING *`;
+        const values = [entity.nombre_usuario, entity.nombre_completo, entity.email, entity.password];
+        const result = await client.query(sql, values);
+        returnResult = result.rows[0];
+    } catch (error) {
+        logHelper.logError(error);
+    } finally {
+        await client.end();
+    }
+    return returnResult;
+}
     
     
     getByIdAsync = async (id) => {
@@ -97,7 +98,7 @@ updateAsync = async (id, entity) => {
         const sql = `
             SELECT 
                 u.id AS usuario_id,
-                u.name,
+                u.nombre_usuario,
                 u.nombre_completo,
                 u.email,
                 u.foto_perfil,

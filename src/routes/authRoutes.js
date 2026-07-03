@@ -5,7 +5,7 @@ import { validarCamposRequeridos } from '../middlewares/validarDatos.js';
 
 const router = Router();
 
-router.post('/register', validarCamposRequeridos(['email', 'name', 'password']), registrar);
+router.post('/register', validarCamposRequeridos(['email', 'nombre_usuario', 'nombre_completo', 'password']), registrar);
 router.post('/login', validarCamposRequeridos(['email', 'password']), login);
 
 

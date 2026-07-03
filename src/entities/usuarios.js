@@ -1,6 +1,6 @@
 class usuarios {
     id;
-    name;
+    nombre_usuario;
     nombre_completo;
     email;
     password;

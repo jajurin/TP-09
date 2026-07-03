@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { registrarUsuario } from '../services/usuario-services.js';
 
-const secretKey = process.env.SECRET_KEY_JTW;
+const secretKey = process.env.SECRET_KEY_JWT;
 
 export const login = async (req, res) => {
   try {
@@ -15,8 +15,8 @@ export const login = async (req, res) => {
 
 export const registrar = async (req, res) => {
   try {
-    const { email, nickname, password } = req.body;
-    const nuevoUsuario = await registrarUsuario({ email, name: nickname, password });
+    const { email, nombre_usuario, password } = req.body;
+    const nuevoUsuario = await registrarUsuario({ email, nombre_usuario: nombre_usuario, password });
     res.status(201).json({ id: nuevoUsuario.id, email: nuevoUsuario.email });
   } catch (error) {
     res.status(409).json({ message: error.message });
