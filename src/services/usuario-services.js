@@ -1,10 +1,11 @@
-    import bcrypt from 'bcrypt';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import UsuarioRepository from '../repositories/usuario-repository.js';
-
+import PublicacionRepository from '../repositories/publicacion-repository.js';
 
 const secretKey = process.env.SECRET_KEY_JTW;
 const usuarioRepository = new UsuarioRepository();
+const publicacionRepository = new PublicacionRepository();
 
 
 export const loginUsuario = async ({ email, nickname, password }) => {
@@ -55,4 +56,29 @@ export const registrarUsuario = async ({ email, name, password }) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   return usuarioRepository.createAsync({ name, email, password: hashedPassword });
+};
+
+
+
+export const obtenerPerfilUsuario = async (userId) => {
+  const usuario = await usuarioRepository.getByIdAsync(userId);
+  if (!usuario) {
+    throw new Error('Usuario no encontrado');
+  }
+
+  const publicaciones = await publicacionRepository.getByUsuarioIdAsync(userId);
+
+  return {
+    id: usuario.id,
+    email: usuario.email,
+    name: usuario.name,
+    nombre_completo: usuario.nombre_completo,
+    biografia: usuario.biografia,
+    foto_perfil: usuario.foto_perfil,
+    publicaciones
+  };
+};
+
+export const editarPerfilUsuario = async (userId, { biografia, nombre_completo, foto_perfil }) => {
+  return usuarioRepository.updateAsync(userId, { biografia, nombre_completo, foto_perfil });
 };

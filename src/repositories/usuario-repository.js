@@ -52,4 +52,44 @@ export default class usuarioRepository {
         }finally {
     await client.end();
        } 
-        return returnResult;}}
+        return returnResult;}
+    
+    
+    getByIdAsync = async (id) => {
+    let returnResult = null;
+    const client = new Client(DBConfig);
+    try {
+        await client.connect();
+        const sql = `SELECT * FROM usuarios WHERE id = $1`;
+        const values = [id];
+        const result = await client.query(sql, values);
+        returnResult = result.rows[0];
+    } catch (error) {
+        logHelper.logError(error);
+    } finally {
+        await client.end();
+    }
+    return returnResult;
+}
+
+updateAsync = async (id, entity) => {
+    let returnResult = null;
+    const client = new Client(DBConfig);
+    try {
+        await client.connect();
+        const sql = `UPDATE usuarios SET biografia = $1, nombre_completo = $2, foto_perfil = $3 WHERE id = $4 RETURNING *`;
+        const values = [entity.biografia, entity.nombre_completo, entity.foto_perfil, id];
+        const result = await client.query(sql, values);
+        returnResult = result.rows[0];
+    } catch (error) {
+        logHelper.logError(error);
+    } finally {
+        await client.end();
+    }
+    return returnResult;
+}
+    
+    
+    
+    }
+

@@ -5,7 +5,6 @@ class publicaciones {
     descripcion;
     likes;
     fecha_creacion;
-    biografia;
 }
 
 export default publicaciones;
