@@ -1,3 +1,6 @@
+import { Client } from 'pg';
+import DBConfig from '../config/db-config.js'; // ajustá el path según tengas armado
+import logHelper from '../helpers/logHelper.js'; // ajustá según tu proyecto
 export default class usuarioRepository {    
     getByEmailAsync = async (email) => {
         

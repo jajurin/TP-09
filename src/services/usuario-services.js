@@ -1,16 +1,25 @@
-import bcrypt from 'bcrypt';
+    import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import UsuarioRepository from '../repositories/usuario-repository.js';
 
-const secretKey = process.env.SECRET_KEY_JTW;
 
+const secretKey = process.env.SECRET_KEY_JTW;
 const usuarioRepository = new UsuarioRepository();
-export const loginUsuario = async ({ email, password }) => {
-   if (email) {
+
+
+export const loginUsuario = async ({ email, nickname, password }) => {
+  let usuario = null;
+
+  if (email) {
     usuario = await usuarioRepository.getByEmailAsync(email);
   }
 
   if (!usuario && nickname) {
     usuario = await usuarioRepository.getByNameAsync(nickname);
+  }
+
+  if (!usuario) {
+    throw new Error('Credenciales inválidas');
   }
   // Compara la contraseña ingresada contra el hash guardado en la BD
   const esValida = await bcrypt.compare(password, usuario.password);
@@ -29,9 +38,7 @@ export const loginUsuario = async ({ email, password }) => {
     issuer: 'ORT'
   };
 
-  const token = jwt.sign(payload, secretKey, options);
-
-  return token;
+  return jwt.sign(payload, secretKey, options);
 };
 
 export const registrarUsuario = async ({ email, name, password }) => {
@@ -44,10 +51,8 @@ export const registrarUsuario = async ({ email, name, password }) => {
   if (existePorNombre) {
     throw new Error('Nickname ya registrado');
   }
-
   // Genera un hash de la contraseña (con 10 rondas de salt) para no guardarla en texto plano en la BD
-const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   return usuarioRepository.createAsync({ name, email, password: hashedPassword });
-  
 };
