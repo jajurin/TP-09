@@ -61,7 +61,7 @@ const updateAsync = async (id, entity) => {
   const client = new Client(DBConfig);
   try {
     await client.connect();
-    const sql = `UPDATE usuarios SET biografia = $1, nombre_completo = $2, foto_perfil = $3 WHERE id = $4 RETURNING *`;
+  const sql = ` UPDATE usuarios  SET biografia = $1, nombre_completo = $2, foto_perfil = $3  WHERE id = $4  RETURNING id, nombre_usuario, nombre_completo, email, foto_perfil, biografia`;
     const values = [entity.biografia, entity.nombre_completo, entity.foto_perfil, id];
     const result = await client.query(sql, values);
     returnResult = result.rows[0];
@@ -126,8 +126,6 @@ export const loginUsuario = async ({ email, nombre_usuario, password }) => {
 
   const payload = {
     id: usuario.id,
-    email: usuario.email,
-    nombre_usuario: usuario.nombre_usuario
   };
 
   const options = {
