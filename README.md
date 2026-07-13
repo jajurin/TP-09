@@ -1,4 +1,4 @@
-Se utilizo Claude para que las lineas de codigo y diagramas se ven bien y no se mezcle con el texto.
+Se utilizo Claude para que las lineas de codigo(del readme) y diagramas se vean bien y no se mezcle con el texto.
 
 1)diagrama textual o descripción detallada de la arquitectura por capas aplicada en el código.
 
