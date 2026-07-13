@@ -1,8 +1,6 @@
 import 'dotenv/config';
 import { registrarUsuario, loginUsuario  } from '../services/usuario-services.js';
 
-const secretKey = process.env.SECRET_KEY_JWT;
-
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
