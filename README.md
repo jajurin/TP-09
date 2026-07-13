@@ -4,7 +4,7 @@ Cada capa tiene un responsabildiad distinta. Siguiendo un flujo que va de desde 
 No obstante tambien se hayan la capa de config, cual cuenta con la configuracion a postgreSQL (db-config.js), mediante las variables de entorno. Tambien se encuentras los helpers que registra errores de las queries.
 
 Dentro de routes, controllers y services, los archivos se dividen por dominio en lugar de concentrar todo en un único archivo. Los middlewares validarToken y validarCamposRequeridos, en cambio, se usan en todas las rutas protegidas.
-Diagrama(realizado con inteligencia artificial):
+Diagrama(Diagrama realizado con inteligencia artificial):
 Cliente (React)
       │
       ▼
@@ -21,7 +21,7 @@ Cliente (React)
       │
       ▼
    PostgreSQL
-Carpetas(realizado con inteligencia artificial):
+Carpetas(Diagrama realizado con inteligencia artificial):
 Estructura de carpetas
 /src
   ├── /config
