@@ -49,8 +49,8 @@ CREATE TABLE public.publicaciones (
     usuario_id integer NOT NULL,
     url_imagen character varying NOT NULL,
     descripcion character varying,
-    likes integer,
-    fecha_creacion timestamp without time zone
+    likes integer DEFAULT 0,
+    fecha_creacion timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
 
@@ -82,7 +82,7 @@ CREATE TABLE public.usuarios (
     nombre_completo character varying NOT NULL,
     email character varying NOT NULL,
     password character varying NOT NULL,
-    foto_perfil character varying,
+    foto_perfil character varying DEFAULT 'https://i.pravatar.cc/150',
     biografia character varying
 );
 
@@ -185,9 +185,20 @@ ALTER TABLE ONLY public.publicaciones
     ADD CONSTRAINT publicaciones_usuarios_fk FOREIGN KEY (usuario_id) REFERENCES public.usuarios(id) ON DELETE CASCADE;
 
 
+--
+-- Corrección post-dump: los registros insertados con OVERRIDING SYSTEM VALUE
+-- quedaron con fecha_creacion en NULL, ya que el DEFAULT solo aplica a
+-- INSERTs que no especifican explícitamente esa columna. Se completan
+-- con la fecha/hora actual para no dejar publicaciones con fecha nula.
+--
+
+UPDATE public.publicaciones
+SET fecha_creacion = CURRENT_TIMESTAMP
+WHERE fecha_creacion IS NULL;
+
+
 -- Completed on 2026-07-03 09:55:00
 
 --
 -- PostgreSQL database dump complete
 --
-
